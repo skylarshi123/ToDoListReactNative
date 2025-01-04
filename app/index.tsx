@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, FlatList, TextInput, Button, Pressable } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
 // Define the structure of a Todo item
 interface Todo {
@@ -59,16 +60,28 @@ export default function Index() {
     );
   };
 
+  // Handle deleting a todo
+  const handleDeleteTodo = (id: string) => {
+    setTodos(todos.filter(todo => todo.id !== id));
+  };
+
   // Render each individual todo item
   const renderTodo = ({ item }: { item: Todo }) => (
-    <Pressable onPress={() => handleToggleTodo(item.id)}>
-      <View>
+    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <Pressable 
+        onPress={() => handleToggleTodo(item.id)}
+        style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}
+      >
         <Text>
           {item.completed ? '✓ ' : '○ '}
           {item.text}
         </Text>
-      </View>
-    </Pressable>
+      </Pressable>
+      
+      <Pressable onPress={() => handleDeleteTodo(item.id)}>
+        <Ionicons name="trash-outline" size={20} />
+      </Pressable>
+    </View>
   );
 
   return (
