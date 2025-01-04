@@ -8,18 +8,43 @@ import {
   StyleSheet,
   Alert,
   Keyboard,
-  Platform
+  Platform,
+  useColorScheme
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-// Define types for better code organization and type safety
+// Define theme colors - Good practice: Keep theme definitions separate
+const theme = {
+  light: {
+    background: '#F2F2F7',
+    card: '#FFFFFF',
+    text: '#1C1C1E',
+    subText: '#666666',
+    primary: '#007AFF',
+    border: '#E5E5EA',
+    delete: '#FF3B30',
+    disabled: '#A2A2A2'
+  },
+  dark: {
+    background: '#1C1C1E',
+    card: '#2C2C2E',
+    text: '#FFFFFF',
+    subText: '#8E8E93',
+    primary: '#0A84FF',
+    border: '#3A3A3C',
+    delete: '#FF453A',
+    disabled: '#636366'
+  }
+};
+
+// Type definitions - Good practice: Define interfaces at the top
 interface Todo {
   id: string;
   text: string;
   completed: boolean;
 }
 
-// Sample initial todos
+// Good practice: Separate constant data
 const initialTodos: Todo[] = [
   { id: '1', text: 'Learn React Native', completed: false },
   { id: '2', text: 'Build a Todo App', completed: true },
@@ -27,11 +52,15 @@ const initialTodos: Todo[] = [
 ];
 
 export default function Index() {
-  // State Management
+  // Hooks at the top - Good practice
+  const colorScheme = useColorScheme();
+  const colors = theme[colorScheme ?? 'light'];
+  
+  // State management
   const [todos, setTodos] = useState<Todo[]>(initialTodos);
   const [newTodoText, setNewTodoText] = useState('');
 
-  // Todo Management Functions
+  // Good practice: Separate handlers into clearly named functions
   const handleAddTodo = () => {
     const trimmedText = newTodoText.trim();
     if (trimmedText === '') {
@@ -39,25 +68,19 @@ export default function Index() {
       return;
     }
 
-    const newTodo: Todo = {
+    setTodos([...todos, {
       id: Date.now().toString(),
       text: trimmedText,
       completed: false
-    };
-
-    setTodos([...todos, newTodo]);
+    }]);
     setNewTodoText('');
     Keyboard.dismiss();
   };
 
   const handleToggleTodo = (id: string) => {
-    setTodos(
-      todos.map(todo =>
-        todo.id === id
-          ? { ...todo, completed: !todo.completed }
-          : todo
-      )
-    );
+    setTodos(todos.map(todo =>
+      todo.id === id ? { ...todo, completed: !todo.completed } : todo
+    ));
   };
 
   const handleDeleteTodo = (id: string) => {
@@ -68,30 +91,33 @@ export default function Index() {
         { text: 'Cancel', style: 'cancel' },
         {
           text: 'Delete',
-          onPress: () => {
-            setTodos(todos.filter(todo => todo.id !== id));
-          },
+          onPress: () => setTodos(todos.filter(todo => todo.id !== id)),
           style: 'destructive'
         }
       ]
     );
   };
 
-  // UI Components
+  // Good practice: Separate render logic
   const renderTodo = ({ item }: { item: Todo }) => (
-    <View style={styles.todoItem}>
+    <View style={[styles.todoItem, { backgroundColor: colors.card }]}>
       <Pressable 
         onPress={() => handleToggleTodo(item.id)}
         style={styles.todoContent}
       >
-        <View style={[styles.checkbox, item.completed && styles.checkboxChecked]}>
+        <View style={[
+          styles.checkbox,
+          { borderColor: colors.primary },
+          item.completed && { backgroundColor: colors.primary }
+        ]}>
           {item.completed && (
-            <Ionicons name="checkmark" size={16} color="white" />
+            <Ionicons name="checkmark" size={16} color={colors.card} />
           )}
         </View>
         <Text style={[
           styles.todoText,
-          item.completed && styles.todoTextCompleted
+          { color: colors.text },
+          item.completed && { color: colors.subText, textDecorationLine: 'line-through' }
         ]}>
           {item.text}
         </Text>
@@ -104,20 +130,26 @@ export default function Index() {
           pressed && styles.deleteButtonPressed
         ]}
       >
-        <Ionicons name="trash-outline" size={20} color="#FF3B30" />
+        <Ionicons name="trash-outline" size={20} color={colors.delete} />
       </Pressable>
     </View>
   );
 
   return (
-    <View style={styles.container}>
-      {/* Add Todo Section */}
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.inputContainer}>
         <TextInput
-          style={styles.input}
+          style={[
+            styles.input,
+            { 
+              backgroundColor: colors.card,
+              color: colors.text
+            }
+          ]}
           value={newTodoText}
           onChangeText={setNewTodoText}
           placeholder="Add a new todo"
+          placeholderTextColor={colors.subText}
           onSubmitEditing={handleAddTodo}
           returnKeyType="done"
           blurOnSubmit={false}
@@ -127,20 +159,19 @@ export default function Index() {
           disabled={newTodoText.trim() === ''}
           style={({ pressed }) => [
             styles.addButton,
+            { backgroundColor: colors.primary },
             pressed && styles.addButtonPressed,
-            newTodoText.trim() === '' && styles.addButtonDisabled
+            newTodoText.trim() === '' && { backgroundColor: colors.disabled }
           ]}
         >
-          <Text style={styles.addButtonText}>Add</Text>
+          <Text style={[styles.addButtonText, { color: colors.card }]}>Add</Text>
         </Pressable>
       </View>
 
-      {/* Todo Count */}
-      <Text style={styles.todoCount}>
+      <Text style={[styles.todoCount, { color: colors.subText }]}>
         You have {todos.length} todos ({todos.filter(todo => todo.completed).length} completed)
       </Text>
       
-      {/* Todo List */}
       <FlatList
         data={todos}
         renderItem={renderTodo}
@@ -152,12 +183,11 @@ export default function Index() {
   );
 }
 
-// Styles
+// Good practice: Use StyleSheet.create for better performance
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#F2F2F7'
+    padding: 20
   },
   inputContainer: {
     flexDirection: 'row',
@@ -167,7 +197,6 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     padding: Platform.OS === 'ios' ? 15 : 10,
-    backgroundColor: 'white',
     borderRadius: 10,
     fontSize: 16,
     shadowColor: '#000',
@@ -177,7 +206,6 @@ const styles = StyleSheet.create({
     elevation: 3
   },
   addButton: {
-    backgroundColor: '#007AFF',
     paddingHorizontal: 20,
     justifyContent: 'center',
     borderRadius: 10
@@ -185,17 +213,12 @@ const styles = StyleSheet.create({
   addButtonPressed: {
     opacity: 0.8
   },
-  addButtonDisabled: {
-    backgroundColor: '#A2A2A2'
-  },
   addButtonText: {
-    color: 'white',
     fontSize: 16,
     fontWeight: '600'
   },
   todoCount: {
     fontSize: 14,
-    color: '#666',
     marginBottom: 10
   },
   list: {
@@ -207,7 +230,6 @@ const styles = StyleSheet.create({
   todoItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'white',
     borderRadius: 10,
     padding: 15,
     shadowColor: '#000',
@@ -227,21 +249,12 @@ const styles = StyleSheet.create({
     height: 24,
     borderRadius: 12,
     borderWidth: 2,
-    borderColor: '#007AFF',
     justifyContent: 'center',
     alignItems: 'center'
   },
-  checkboxChecked: {
-    backgroundColor: '#007AFF'
-  },
   todoText: {
     fontSize: 16,
-    color: '#1C1C1E',
     flex: 1
-  },
-  todoTextCompleted: {
-    textDecorationLine: 'line-through',
-    color: '#8E8E93'
   },
   deleteButton: {
     padding: 5,
