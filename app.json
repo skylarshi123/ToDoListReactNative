@@ -9,7 +9,14 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      // This setting is crucial for status bar appearance control
+      // The error occurred because iOS requires explicit permission
+      // to let apps control the status bar appearance.
+      // Setting this to true tells iOS "Yes, let my app control the status bar look"
+      "infoPlist": {
+        "UIViewControllerBasedStatusBarAppearance": true
+      }
     },
     "android": {
       "adaptiveIcon": {
