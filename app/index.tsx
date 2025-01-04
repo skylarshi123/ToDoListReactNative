@@ -39,7 +39,7 @@ export default function Index() {
     if (newTodoText.trim() === '') return;
 
     const newTodo: Todo = {
-      id: Date.now().toString(), // Simple way to generate unique IDs
+      id: Date.now().toString(),
       text: newTodoText.trim(),
       completed: false
     };
@@ -48,14 +48,27 @@ export default function Index() {
     setNewTodoText(''); // Clear the input after adding
   };
 
+  // Handle toggling a todo's completed status
+  const handleToggleTodo = (id: string) => {
+    setTodos(
+      todos.map(todo =>
+        todo.id === id
+          ? { ...todo, completed: !todo.completed }
+          : todo
+      )
+    );
+  };
+
   // Render each individual todo item
   const renderTodo = ({ item }: { item: Todo }) => (
-    <View>
-      <Text>
-        {item.completed ? '✓ ' : '○ '}
-        {item.text}
-      </Text>
-    </View>
+    <Pressable onPress={() => handleToggleTodo(item.id)}>
+      <View>
+        <Text>
+          {item.completed ? '✓ ' : '○ '}
+          {item.text}
+        </Text>
+      </View>
+    </Pressable>
   );
 
   return (
@@ -66,7 +79,6 @@ export default function Index() {
           value={newTodoText}
           onChangeText={setNewTodoText}
           placeholder="Add a new todo"
-          // Submit when user hits enter/return
           onSubmitEditing={handleAddTodo}
           returnKeyType="done"
         />
@@ -78,7 +90,7 @@ export default function Index() {
       </View>
 
       {/* Display number of todos */}
-      <Text>You have {todos.length} todos</Text>
+      <Text>You have {todos.length} todos ({todos.filter(todo => todo.completed).length} completed)</Text>
       
       {/* List of todos */}
       <FlatList
