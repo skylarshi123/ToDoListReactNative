@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, FlatList } from 'react-native';
+import { View, Text, FlatList, TextInput, Button, Pressable } from 'react-native';
 
 // Define the structure of a Todo item
 interface Todo {
@@ -28,14 +28,30 @@ const initialTodos: Todo[] = [
 ];
 
 export default function Index() {
-  // Initialize state with our test data
+  // State for todos list
   const [todos, setTodos] = useState<Todo[]>(initialTodos);
+  // State for the new todo input
+  const [newTodoText, setNewTodoText] = useState('');
+
+  // Handle adding a new todo
+  const handleAddTodo = () => {
+    // Don't add empty todos
+    if (newTodoText.trim() === '') return;
+
+    const newTodo: Todo = {
+      id: Date.now().toString(), // Simple way to generate unique IDs
+      text: newTodoText.trim(),
+      completed: false
+    };
+
+    setTodos([...todos, newTodo]);
+    setNewTodoText(''); // Clear the input after adding
+  };
 
   // Render each individual todo item
   const renderTodo = ({ item }: { item: Todo }) => (
     <View>
       <Text>
-        {/* Show a checkmark for completed todos */}
         {item.completed ? '✓ ' : '○ '}
         {item.text}
       </Text>
@@ -44,6 +60,23 @@ export default function Index() {
 
   return (
     <View>
+      {/* Add todo section */}
+      <View>
+        <TextInput
+          value={newTodoText}
+          onChangeText={setNewTodoText}
+          placeholder="Add a new todo"
+          // Submit when user hits enter/return
+          onSubmitEditing={handleAddTodo}
+          returnKeyType="done"
+        />
+        <Button 
+          title="Add Todo" 
+          onPress={handleAddTodo}
+          disabled={newTodoText.trim() === ''}
+        />
+      </View>
+
       {/* Display number of todos */}
       <Text>You have {todos.length} todos</Text>
       
