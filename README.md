@@ -1,50 +1,74 @@
-# Welcome to your Expo app 👋
+# React Native Todo App 📝
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+<div align="center">
+  <img src="https://www.amitree.com/wp-content/uploads/2021/08/the-pros-and-cons-of-paper-to-do-lists.jpeg" alt="Todo App Screenshot" />
 
-## Get started
+  ![React Native](https://img.shields.io/badge/React_Native-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+  ![Expo](https://img.shields.io/badge/Expo-000020?style=for-the-badge&logo=expo&logoColor=white)
+  ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+</div>
 
-1. Install dependencies
+## Overview
 
+A clean and intuitive todo list application built with React Native and Expo. This project demonstrates fundamental React Native concepts including component structure, state management, and user interactions.
+
+## Features
+
+- ✨ Add new tasks
+- ✅ Mark tasks as complete
+- 🗑️ Delete tasks
+- 🌓 Dark mode support
+- 📱 Responsive design
+
+## Setup Instructions
+
+1. **Prerequisites**
    ```bash
+   # Install Expo CLI globally
+   npm install -g expo-cli
+   ```
+
+2. **Installation**
+   ```bash
+   # Clone the repository
+   git clone [repository-url]
+
+   # Install dependencies
+   cd todo-app
    npm install
    ```
 
-2. Start the app
-
+3. **Running the App**
    ```bash
-    npx expo start
+   # Start the development server
+   npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+## Third-Party Libraries
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- **@expo/vector-icons**: Used for task and UI icons
+- **expo-router**: Handles navigation setup
+- **expo-status-bar**: Manages status bar appearance
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## App Structure
 
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+todo-app/
+├── app/
+│   ├── _layout.tsx    # Navigation and theme setup
+│   └── index.tsx      # Main todo list screen
+└── package.json
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Usage
 
-## Learn more
+- Tap the input field to add a new task
+- Tap a task to mark it as complete
+- Tap the trash icon to delete a task
+- App automatically adapts to system dark/light mode
 
-To learn more about developing your project with Expo, look at the following resources:
+---
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+<div align="center">
+  Built with ❤️ using React Native
+</div>

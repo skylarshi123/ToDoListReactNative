@@ -1,132 +1,171 @@
+// Import React and necessary components from React Native
 import React, { useState } from 'react';
 import {
-  View,
-  Text,
-  FlatList,
-  TextInput,
-  Pressable,
-  StyleSheet,
-  Alert,
-  Keyboard,
-  Platform,
-  useColorScheme
+  View,         // A container component, like a div in web
+  Text,         // For displaying text
+  FlatList,     // Efficient list rendering component
+  TextInput,    // Input field for text
+  Pressable,    // Touchable component with more flexibility than TouchableOpacity
+  StyleSheet,   // For creating optimized style objects
+  Alert,        // For showing native alert dialogs
+  Keyboard,     // API for controlling keyboard
+  Platform,     // API for platform-specific code
+  useColorScheme // Hook to detect device theme
 } from 'react-native';
+// Import Ionicons for icons
 import { Ionicons } from '@expo/vector-icons';
 
-// Define theme colors - Good practice: Keep theme definitions separate
+// Theme object containing all our color schemes
+// We define both light and dark mode colors here
 const theme = {
+  // Light mode colors
   light: {
-    background: '#F2F2F7',
-    card: '#FFFFFF',
-    text: '#1C1C1E',
-    subText: '#666666',
-    primary: '#007AFF',
-    border: '#E5E5EA',
-    delete: '#FF3B30',
-    disabled: '#A2A2A2'
+    background: '#F2F2F7',  // Light gray background
+    card: '#FFFFFF',        // White cards
+    text: '#1C1C1E',       // Almost black text
+    subText: '#666666',     // Gray text for less important content
+    primary: '#007AFF',     // iOS blue for primary actions
+    border: '#E5E5EA',      // Light border color
+    delete: '#FF3B30',      // iOS red for destructive actions
+    disabled: '#A2A2A2'     // Gray for disabled states
   },
+  // Dark mode colors
   dark: {
-    background: '#1C1C1E',
-    card: '#2C2C2E',
-    text: '#FFFFFF',
-    subText: '#8E8E93',
-    primary: '#0A84FF',
-    border: '#3A3A3C',
-    delete: '#FF453A',
-    disabled: '#636366'
+    background: '#1C1C1E',  // Dark background
+    card: '#2C2C2E',        // Slightly lighter dark for cards
+    text: '#FFFFFF',        // White text
+    subText: '#8E8E93',     // Light gray for less important content
+    primary: '#0A84FF',     // Brighter blue for dark mode
+    border: '#3A3A3C',      // Dark border color
+    delete: '#FF453A',      // Brighter red for dark mode
+    disabled: '#636366'     // Gray for disabled states
   }
 };
 
-// Type definitions - Good practice: Define interfaces at the top
+// TypeScript interface defining the shape of a Todo item
 interface Todo {
-  id: string;
-  text: string;
-  completed: boolean;
+  id: string;      // Unique identifier for each todo
+  text: string;    // The actual todo text
+  completed: boolean; // Whether the todo is completed or not
 }
 
-// Good practice: Separate constant data
+// Initial todos for testing - these will show up when the app first loads
 const initialTodos: Todo[] = [
   { id: '1', text: 'Learn React Native', completed: false },
   { id: '2', text: 'Build a Todo App', completed: true },
   { id: '3', text: 'Write Documentation', completed: false }
 ];
 
+// Main component of our app
 export default function Index() {
-  // Hooks at the top - Good practice
+  // Get the device's color scheme (light/dark) and set default to light if null
   const colorScheme = useColorScheme();
+  // Get the appropriate colors based on the color scheme
   const colors = theme[colorScheme ?? 'light'];
   
-  // State management
+  // State for managing our list of todos
+  // useState is a hook that lets us add state to functional components
   const [todos, setTodos] = useState<Todo[]>(initialTodos);
+  
+  // State for managing the text input for new todos
   const [newTodoText, setNewTodoText] = useState('');
 
-  // Good practice: Separate handlers into clearly named functions
+  // Function to handle adding a new todo
   const handleAddTodo = () => {
+    // Remove whitespace from beginning and end of input
     const trimmedText = newTodoText.trim();
+    
+    // Don't add empty todos
     if (trimmedText === '') {
+      // Show an alert if the user tries to add an empty todo
       Alert.alert('Cannot add empty todo', 'Please enter some text first.');
       return;
     }
 
+    // Add the new todo to our list
     setTodos([...todos, {
-      id: Date.now().toString(),
+      id: Date.now().toString(), // Use timestamp as a simple unique ID
       text: trimmedText,
-      completed: false
+      completed: false // New todos start as not completed
     }]);
+    
+    // Clear the input field
     setNewTodoText('');
+    // Hide the keyboard
     Keyboard.dismiss();
   };
 
+  // Function to toggle a todo's completed status
   const handleToggleTodo = (id: string) => {
+    // Map through todos and toggle the matched one
     setTodos(todos.map(todo =>
-      todo.id === id ? { ...todo, completed: !todo.completed } : todo
+      todo.id === id 
+        ? { ...todo, completed: !todo.completed } // Toggle this todo
+        : todo // Leave other todos unchanged
     ));
   };
 
+  // Function to delete a todo
   const handleDeleteTodo = (id: string) => {
+    // Show confirmation dialog before deleting
     Alert.alert(
       'Delete Todo',
       'Are you sure you want to delete this todo?',
       [
+        // Cancel button
         { text: 'Cancel', style: 'cancel' },
+        // Delete button
         {
           text: 'Delete',
-          onPress: () => setTodos(todos.filter(todo => todo.id !== id)),
-          style: 'destructive'
+          onPress: () => setTodos(todos.filter(todo => todo.id !== id)), // Remove the todo
+          style: 'destructive' // Makes the button red on iOS
         }
       ]
     );
   };
 
-  // Good practice: Separate render logic
+  // Function to render each todo item
+  // This is used by FlatList to render each item in the list
   const renderTodo = ({ item }: { item: Todo }) => (
     <View style={[styles.todoItem, { backgroundColor: colors.card }]}>
+      {/* Left side - Checkbox and Text */}
       <Pressable 
         onPress={() => handleToggleTodo(item.id)}
         style={styles.todoContent}
       >
+        {/* Custom checkbox */}
         <View style={[
           styles.checkbox,
           { borderColor: colors.primary },
+          // Change background color when completed
           item.completed && { backgroundColor: colors.primary }
         ]}>
+          {/* Show checkmark when completed */}
           {item.completed && (
             <Ionicons name="checkmark" size={16} color={colors.card} />
           )}
         </View>
+        
+        {/* Todo text */}
         <Text style={[
           styles.todoText,
           { color: colors.text },
-          item.completed && { color: colors.subText, textDecorationLine: 'line-through' }
+          // Strike through and gray out when completed
+          item.completed && { 
+            color: colors.subText, 
+            textDecorationLine: 'line-through' 
+          }
         ]}>
           {item.text}
         </Text>
       </Pressable>
       
+      {/* Delete button */}
       <Pressable 
         onPress={() => handleDeleteTodo(item.id)}
         style={({ pressed }) => [
           styles.deleteButton,
+          // Show feedback when pressed
           pressed && styles.deleteButtonPressed
         ]}
       >
@@ -135,9 +174,12 @@ export default function Index() {
     </View>
   );
 
+  // Main render
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
+      {/* Input section */}
       <View style={styles.inputContainer}>
+        {/* Text input for new todos */}
         <TextInput
           style={[
             styles.input,
@@ -150,13 +192,15 @@ export default function Index() {
           onChangeText={setNewTodoText}
           placeholder="Add a new todo"
           placeholderTextColor={colors.subText}
-          onSubmitEditing={handleAddTodo}
+          onSubmitEditing={handleAddTodo} // Handle enter/return key
           returnKeyType="done"
-          blurOnSubmit={false}
+          blurOnSubmit={false} // Don't hide keyboard on submit
         />
+        
+        {/* Add button */}
         <Pressable 
           onPress={handleAddTodo}
-          disabled={newTodoText.trim() === ''}
+          disabled={newTodoText.trim() === ''} // Disable if input is empty
           style={({ pressed }) => [
             styles.addButton,
             { backgroundColor: colors.primary },
@@ -168,10 +212,12 @@ export default function Index() {
         </Pressable>
       </View>
 
+      {/* Todo count text */}
       <Text style={[styles.todoCount, { color: colors.subText }]}>
         You have {todos.length} todos ({todos.filter(todo => todo.completed).length} completed)
       </Text>
       
+      {/* List of todos */}
       <FlatList
         data={todos}
         renderItem={renderTodo}
@@ -183,84 +229,86 @@ export default function Index() {
   );
 }
 
-// Good practice: Use StyleSheet.create for better performance
+// Styles for our components
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: 20
+    flex: 1,               // Take up all available space
+    padding: 20            // Add padding around all content
   },
   inputContainer: {
-    flexDirection: 'row',
-    marginBottom: 20,
-    gap: 10
+    flexDirection: 'row',  // Arrange children horizontally
+    marginBottom: 20,      // Space below the input section
+    gap: 10               // Space between input and button
   },
   input: {
-    flex: 1,
-    padding: Platform.OS === 'ios' ? 15 : 10,
-    borderRadius: 10,
-    fontSize: 16,
+    flex: 1,              // Take up remaining space
+    padding: Platform.OS === 'ios' ? 15 : 10, // Different padding per platform
+    borderRadius: 10,     // Rounded corners
+    fontSize: 16,         // Text size
+    // Shadow for iOS
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 3
+    elevation: 3          // Shadow for Android
   },
   addButton: {
-    paddingHorizontal: 20,
-    justifyContent: 'center',
-    borderRadius: 10
+    paddingHorizontal: 20,     // Left/right padding
+    justifyContent: 'center',   // Center text vertically
+    borderRadius: 10           // Rounded corners
   },
   addButtonPressed: {
-    opacity: 0.8
+    opacity: 0.8              // Slightly transparent when pressed
   },
   addButtonText: {
-    fontSize: 16,
-    fontWeight: '600'
+    fontSize: 16,            // Text size
+    fontWeight: '600'        // Semi-bold text
   },
   todoCount: {
-    fontSize: 14,
-    marginBottom: 10
+    fontSize: 14,           // Smaller text size
+    marginBottom: 10        // Space below the count
   },
   list: {
-    flex: 1
+    flex: 1                // Take up remaining space
   },
   listContent: {
-    gap: 10
+    gap: 10               // Space between todo items
   },
   todoItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: 10,
-    padding: 15,
+    flexDirection: 'row',  // Arrange horizontally
+    alignItems: 'center',  // Center items vertically
+    borderRadius: 10,      // Rounded corners
+    padding: 15,           // Internal spacing
+    // Shadow for iOS
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
-    elevation: 2
+    elevation: 2           // Shadow for Android
   },
   todoContent: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10
+    flex: 1,              // Take up remaining space
+    flexDirection: 'row', // Arrange horizontally
+    alignItems: 'center', // Center items vertically
+    gap: 10              // Space between checkbox and text
   },
   checkbox: {
-    width: 24,
+    width: 24,            // Fixed size
     height: 24,
-    borderRadius: 12,
-    borderWidth: 2,
-    justifyContent: 'center',
+    borderRadius: 12,     // Make it circular
+    borderWidth: 2,       // Border thickness
+    justifyContent: 'center', // Center checkmark
     alignItems: 'center'
   },
   todoText: {
-    fontSize: 16,
-    flex: 1
+    fontSize: 16,         // Text size
+    flex: 1              // Take up remaining space
   },
   deleteButton: {
-    padding: 5,
-    marginLeft: 10
+    padding: 5,           // Touch target padding
+    marginLeft: 10        // Space from todo text
   },
   deleteButtonPressed: {
-    opacity: 0.5
+    opacity: 0.5         // More transparent when pressed
   }
 });
