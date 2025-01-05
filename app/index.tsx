@@ -100,7 +100,7 @@ export default function Index() {
   };
 
   // Function to toggle a todo's completed status
-  const handleToggleTodo = (id: string) => {
+  const handleToggleComplete = (id: string) => {
     // Map through todos and toggle the matched one
     setTodos(todos.map(todo =>
       todo.id === id 
@@ -134,7 +134,7 @@ export default function Index() {
     <View style={[styles.todoItem, { backgroundColor: colors.card }]}>
       {/* Left side - Checkbox and Text */}
       <Pressable 
-        onPress={() => handleToggleTodo(item.id)}
+        onPress={() => handleToggleComplete(item.id)}
         style={styles.todoContent}
       >
         {/* Custom checkbox */}
@@ -197,7 +197,7 @@ export default function Index() {
           ]}
           value={newTodoText}
           onChangeText={setNewTodoText}
-          placeholder="Add a new todo"
+          placeholder="Add a new task"
           placeholderTextColor={colors.subText}
           onSubmitEditing={handleAddTodo} // Handle enter/return key
           returnKeyType="done"
@@ -221,7 +221,7 @@ export default function Index() {
 
       {/* Todo count text */}
       <Text style={[styles.todoCount, { color: colors.subText }]}>
-        You have {todos.length} todos ({todos.filter(todo => todo.completed).length} completed)
+        You have {todos.length} tasks ({todos.filter(todo => todo.completed).length} completed)
       </Text>
       
       {/* List of todos */}
