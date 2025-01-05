@@ -47,13 +47,16 @@ interface Todo {
   id: string;      // Unique identifier for each todo
   text: string;    // The actual todo text
   completed: boolean; // Whether the todo is completed or not
+  deleted: boolean; // Whether the todo is deleted or not
 }
+//Previous commits ToDo's were deleted permanently, but after talking to my mentor, he suggested I implement soft deletion
+//This would allow future development in possibly and undo option
 
 // Initial todos for testing - these will show up when the app first loads
 const initialTodos: Todo[] = [
-  { id: '1', text: 'Learn React Native', completed: false },
-  { id: '2', text: 'Build a Todo App', completed: true },
-  { id: '3', text: 'Write Documentation', completed: false }
+  { id: '1', text: 'Learn React Native', completed: false, deleted: false },
+  { id: '2', text: 'Build a Todo App', completed: true, deleted: false },
+  { id: '3', text: 'Write Documentation', completed: false, deleted: false }
 ];
 
 // Main component of our app
@@ -86,7 +89,8 @@ export default function Index() {
     setTodos([...todos, {
       id: Date.now().toString(), // Use timestamp as a simple unique ID
       text: trimmedText,
-      completed: false // New todos start as not completed
+      completed: false, // New todos start as not completed
+      deleted: false //
     }]);
     
     // Clear the input field
@@ -117,7 +121,7 @@ export default function Index() {
         // Delete button
         {
           text: 'Delete',
-          onPress: () => setTodos(todos.filter(todo => todo.id !== id)), // Remove the todo
+          onPress: () => setTodos(todos.map(todo => todo.id === id ? { ...todo, deleted: true }: todo)), // Soft delete
           style: 'destructive' // Makes the button red on iOS
         }
       ]
@@ -174,6 +178,9 @@ export default function Index() {
     </View>
   );
 
+  // Render non-deleted todos
+  const activeTodos = todos.filter(todo => !todo.deleted);
+
   // Main render
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -219,7 +226,7 @@ export default function Index() {
       
       {/* List of todos */}
       <FlatList
-        data={todos}
+        data={activeTodos}
         renderItem={renderTodo}
         keyExtractor={item => item.id}
         style={styles.list}
