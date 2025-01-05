@@ -49,7 +49,7 @@ export default function RootLayout() {
             title: 'My Tasks',
             headerLeft: () => (
               <Ionicons 
-                name="checkbox-outline"
+                name="document-text-outline"
                 size={24}
                 style={{ 
                   marginLeft: 16,
