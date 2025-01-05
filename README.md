@@ -34,7 +34,7 @@ A clean and intuitive todo list application built with React Native and Expo. Th
    git clone https://github.com/skylarshi123/ToDoListReactNative.git
 
    # Install dependencies
-   cd todo-app
+   cd ToDoListReactNative
    npm install
    ```
 
