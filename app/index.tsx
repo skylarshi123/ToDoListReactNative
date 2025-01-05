@@ -221,7 +221,7 @@ export default function Index() {
 
       {/* Todo count text */}
       <Text style={[styles.todoCount, { color: colors.subText }]}>
-        You have {todos.length} tasks ({todos.filter(todo => todo.completed).length} completed)
+        You have {todos.length} tasks ({todos.filter(todo => todo.completed && !todo.deleted).length} completed)
       </Text>
       
       {/* List of todos */}
